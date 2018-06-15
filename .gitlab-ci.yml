@@ -1,0 +1,33 @@
+image: docker
+
+cache: {}
+
+before_script:
+
+docker-compose:
+  stage: build
+  script:
+    - |
+      set -xeuo pipefail
+
+      export COMPOSE_VERSION=$(cat Dockerfile | grep DOCKER_COMPOSE_VERSION= | cut -d"=" -f2)
+      export IMAGE_NAME="docker22.bs.lan/docker/docker-compose"
+      export IMAGE_NAME_WITH_VERSION="$IMAGE_NAME:$COMPOSE_VERSION"
+
+      # build
+      docker build -t "${IMAGE_NAME}" .
+
+      # test if docker-compose is installed properly and if it has the right version
+      docker run --rm "${IMAGE_NAME}" docker-compose version
+      docker run --rm "${IMAGE_NAME}" docker-compose version | grep $COMPOSE_VERSION
+
+      # push (only from master!)
+      if [ "${CI_COMMIT_REF_NAME}" = master ]; then
+        docker tag "${IMAGE_NAME}" "${IMAGE_NAME_WITH_VERSION}"
+        docker push "${IMAGE_NAME_WITH_VERSION}"
+        docker push "${IMAGE_NAME}" # also publish as :latest
+        docker rmi "${IMAGE_NAME_WITH_VERSION}"
+      fi
+
+      # Clean up
+      docker rmi "${IMAGE_NAME}"

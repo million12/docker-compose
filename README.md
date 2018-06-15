@@ -12,7 +12,7 @@ Then you want to use the same setup on CI environment. Here's how it could look 
 .gitlab-ci.yml:
 ```bash
 my-build-job:
-  image: docker
+  image: docker22.bs.lan/docker/docker-compose:1.21.2
   script:
     - export DOCKER_IMAGE_NAME="docker22.bs.lan/blackswan/fe-project-name:v${CI_PIPELINE_ID}"
     - docker-compose build
@@ -29,7 +29,7 @@ services:
       context: .
       dockerfile: scripts/docker/Dockerfile
     ports:
-      - '4780:80' # Local dev version starts on :4700, launch Docker version on :4780
+      - '4780:80' # export the app locally on :port
 ```
 
 --
