@@ -22,12 +22,12 @@ docker-compose:
       docker run --rm "${IMAGE_NAME}" docker-compose version | grep $COMPOSE_VERSION
 
       # push (only from master!)
-      if [ "${CI_COMMIT_REF_NAME}" = master ]; then
+      # if [ "${CI_COMMIT_REF_NAME}" = master ]; then
         docker tag "${IMAGE_NAME}" "${IMAGE_NAME_WITH_VERSION}"
         docker push "${IMAGE_NAME_WITH_VERSION}"
         docker push "${IMAGE_NAME}" # also publish as :latest
         docker rmi "${IMAGE_NAME_WITH_VERSION}"
-      fi
+      # fi
 
       # Clean up
       docker rmi "${IMAGE_NAME}"
